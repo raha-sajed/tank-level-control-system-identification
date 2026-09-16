@@ -1,0 +1,34 @@
+# MATLAB autosave and backup files
+*.asv
+*.m~
+*.autosave
+
+# MATLAB temporary/generated files
+*.mex*
+*.mlappinstall
+*.mltbx
+*.log
+*.tmp
+
+# Simulink generated/cache files
+*.slxc
+slprj/
+*_ert_rtw/
+*_grt_rtw/
+codegen/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor/IDE files
+.vscode/
+.idea/
+
+# Archives
+*.zip
+*.rar
+*.7z
+
+# Keep required experimental .mat files in data/.
+# Do not ignore *.mat globally unless these files become too large.

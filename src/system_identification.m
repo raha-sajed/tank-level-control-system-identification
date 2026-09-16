@@ -1,9 +1,44 @@
-%% Fatemeh Sajed 40119113
-%% Step 1 & 2: Load Data & Signal Extraction
+%% System Identification for Tank Level Process
+% Experimental System Identification and PI/PID Control of a Tank Level Process
+%
+% This script:
+%   1. Loads experimental input/output tank level data.
+%   2. Estimates local FOPTD parameters from multiple step responses.
+%   3. Selects the operating region.
+%   4. Validates the identified model against measured data.
+
 clear; clc; close all;
-input_struct  = load('matlab.mat');  output_struct = load('output.mat');
-u_ts = input_struct.input_level;    y_ts = output_struct.output_level;
-t_in = u_ts.Time(:); u = u_ts.Data(:); t_out = y_ts.Time(:); y = y_ts.Data(:);
+
+%% Step 1: Load Experimental Data
+
+% Resolve project root automatically.
+% This makes the script runnable from any MATLAB current folder.
+projectRoot = fileparts(fileparts(mfilename('fullpath')));
+
+figuresDir = fullfile(projectRoot, 'figures');
+resultsDir = fullfile(projectRoot, 'results');
+
+if ~exist(figuresDir, 'dir')
+    mkdir(figuresDir);
+end
+
+if ~exist(resultsDir, 'dir')
+    mkdir(resultsDir);
+end
+
+inputDataPath  = fullfile(projectRoot, 'data', 'input_level_data.mat');
+outputDataPath = fullfile(projectRoot, 'data', 'output_level_data.mat');
+
+input_struct  = load(inputDataPath);
+output_struct = load(outputDataPath);
+
+u_ts = input_struct.input_level;
+y_ts = output_struct.output_level;
+
+t_in  = u_ts.Time(:);
+u     = u_ts.Data(:);
+t_out = y_ts.Time(:);
+y     = y_ts.Data(:);
 
 figure('Name', 'System Step Response');
 subplot(2,1,1); plot(t_in, u, 'Color', [0.05 0.25 0.55], 'LineWidth', 1.5); grid on; title('Input Signal (u)'); xlabel('Time (s)'); ylabel('Input Level');

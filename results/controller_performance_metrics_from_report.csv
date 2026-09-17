@@ -1,0 +1,7 @@
+Controller,Overshoot_Test1_percent,SteadyStateError_Test1_cm,Overshoot_Test2_percent,SteadyStateError_Test2_cm,Undershoot_Test3_percent,SteadyStateError_Test3_cm,DisturbanceDeviation1_cm,DisturbanceDeviation2_cm
+PI Ziegler-Nichols,27.77,0,28.27,0.08,26.13,0.05,14.97,10
+PID Ziegler-Nichols,64.5,0,64.11,0.07,62.48,0.03,12.17,10.04
+PI CHR Disturbance,0,0.03,0,0.34,0,0.25,16.31,10
+PID CHR Disturbance,22.35,0,22.58,0,21.63,0,12.63,10
+PI CHR Tracking,0,0.01,0,0.24,0,0.15,18.33,10
+PID CHR Tracking,2.44,0,2.37,0.01,2.42,0.01,13.63,10

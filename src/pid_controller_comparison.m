@@ -240,44 +240,67 @@ catch ME
     warning('%s', ME.message);
 end
 
-%% Step 10: Plot Simulation Results if y_sim Exists
-
-% This block assumes y_sim is available as a Simulink timeseries-like object.
-% If your model saves multiple named signals, send me the output of simOut.who
-% and I will adapt this plotting section exactly to your model.
-
+%% Step 10: Export Readable Controller Comparisons
+% Column order follows the six-input Mux in the original Simulink model.
 if exist('y_sim', 'var')
+    t_sim = y_sim.Time(:);
+    y_data = squeeze(y_sim.Data);
+    assert(size(y_data, 1) == numel(t_sim) && size(y_data, 2) == 6, ...
+        'Expected six controller signals with one row per time sample.');
 
-    try
-        t_sim = y_sim.Time;
-        y_data = y_sim.Data;
+    % Reference and disturbance times from the original experiment.
+    r_ref = 35 * ones(size(t_sim));
+    r_ref(t_sim >= 400 & t_sim < 800) = 55;
+    r_ref(t_sim >= 800) = 45;
 
-        figResponse = figure('Name', 'PI/PID Controller Comparison', ...
-                             'Color', 'w', ...
-                             'Position', [100 100 1100 650]);
+    colors = [0.85 0.32 0.10; 0.63 0.08 0.18; ...
+              0.30 0.65 0.85; 0.00 0.35 0.65; ...
+              0.47 0.67 0.19; 0.13 0.50 0.13];
+    labels = {'PI ZN', 'PID ZN', 'PI CHR (Dist)', ...
+              'PID CHR (Dist)', 'PI CHR (Tracking)', 'PID CHR (Tracking)'};
+    styles = {'--', '-', '--', '-', '--', '-'};
+    groups = {1:6, 1:4, 5:6, [2 4 6]};
+    titles = {'PI/PID Controller Comparison', ...
+              'Disturbance Rejection: Ziegler-Nichols vs. CHR', ...
+              'Setpoint Tracking: CHR Controllers', ...
+              'PID Design Strategies: ZN vs. CHR'};
+    files = {'pid_controller_comparison', 'pid_disturbance_rejection', ...
+             'pid_setpoint_tracking', 'pid_strategy_comparison'};
 
-        plot(t_sim, y_data, ...
-            'LineWidth', 1.5);
-
-        grid on; box on;
-        title('PI/PID Controller Comparison');
-        xlabel('Time (s)');
-        ylabel('Tank Level (cm)');
-
-        exportgraphics(figResponse, ...
-            fullfile(figuresDir, 'pid_controller_comparison.png'), ...
-            'Resolution', 300);
-
-        fprintf('Controller comparison figure saved successfully.\n');
-
-    catch ME
-        warning('Could not plot y_sim automatically.');
-        warning('%s', ME.message);
+    for panel = 1:numel(groups)
+        figResponse = figure('Name', titles{panel}, 'Color', 'w', ...
+            'Units', 'pixels', 'Position', [100 100 1000 620]);
+        ax = axes(figResponse);
+        hold(ax, 'on'); grid(ax, 'on'); box(ax, 'on');
+        set(ax, 'FontName', 'Helvetica', 'FontSize', 12, ...
+            'LineWidth', 0.8, 'GridAlpha', 0.12);
+        plot(ax, t_sim, r_ref, ':', 'Color', [0.2 0.2 0.2], ...
+            'LineWidth', 2, 'DisplayName', 'Reference');
+        for column = groups{panel}
+            plot(ax, t_sim, y_data(:, column), styles{column}, ...
+                'Color', colors(column, :), 'LineWidth', 1.7, ...
+                'DisplayName', labels{column});
+        end
+        xline(ax, 600, '-.', 'Input disturbance', ...
+            'Color', [0.4 0.4 0.4], 'FontSize', 10, ...
+            'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
+        xline(ax, 1000, '-.', 'Output disturbance', ...
+            'Color', [0.4 0.4 0.4], 'FontSize', 10, ...
+            'LabelVerticalAlignment', 'bottom', 'HandleVisibility', 'off');
+        title(ax, titles{panel}, 'FontSize', 15, 'FontWeight', 'bold');
+        xlabel(ax, 'Time (s)', 'FontSize', 13);
+        ylabel(ax, 'Tank level (cm)', 'FontSize', 13);
+        xlim(ax, [0 1200]); ylim(ax, [0 80]);
+        xticks(ax, 0:200:1200);
+        legend(ax, 'Location', 'southoutside', 'NumColumns', 3, ...
+            'FontSize', 11, 'Box', 'off');
+        drawnow;
+        exportgraphics(figResponse, fullfile(figuresDir, [files{panel} '.png']), ...
+            'Resolution', 180);
     end
-
+    fprintf('Four controller comparison figures saved successfully.\n');
 else
-    fprintf('\nNo y_sim variable was found for automatic plotting.\n');
-    fprintf('This is not fatal. Controller parameters were saved successfully.\n');
+    warning('No y_sim output was found; controller figures were not updated.');
 end
 
 %% Step 11: Save Reference Performance Metrics from Report

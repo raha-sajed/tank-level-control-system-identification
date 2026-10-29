@@ -32,3 +32,6 @@ Thumbs.db
 
 # Keep required experimental .mat files in data/.
 # Do not ignore *.mat globally unless these files become too large.
+
+# Original lab reports and raw project archive (local only)
+/original/

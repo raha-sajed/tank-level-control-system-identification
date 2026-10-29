@@ -71,6 +71,13 @@ The [controller parameter table](results/controller_parameters.csv) is generated
 
 ### 1. Identify and validate the process
 
+The experimental data are not distributed with this repository. To reproduce the identification, create a local `data/` folder and provide data you are authorized to use in the expected format:
+
+- `data/input_level_data.mat`: an `input_level` timeseries (time in seconds, valve opening in percent).
+- `data/output_level_data.mat`: an `output_level` timeseries (time in seconds, tank level in centimetres).
+
+The scripts access each timeseries through its `Time` and `Data` properties. Published figures and result tables can be inspected without these files; the controller-comparison script uses the recorded model parameters and does not require the raw data.
+
 Open MATLAB, set the current folder to the repository root, and run:
 
 ```matlab
@@ -106,7 +113,7 @@ These are additional laboratory models for interactive exploration. The paramete
 tank-level-control-system-identification/
 ├── README.md
 ├── requirements.md
-├── data/                         # Experimental input and measured level
+├── data/                         # Local data required for identification; Git-ignored
 │   ├── input_level_data.mat
 │   └── output_level_data.mat
 ├── src/
@@ -121,7 +128,7 @@ tank-level-control-system-identification/
 └── results/                      # Model, tuning, and performance tables
 ```
 
-The experimental MAT files contain `input_level` and `output_level` timeseries objects. The original reports and raw project archive are retained locally in `original/`, which is excluded from Git. Simulink cache files and generated build folders are also ignored.
+The `data/` directory is local only and excluded from Git; it must be created separately after cloning. The original reports and raw project archive are retained locally in `original/`, which is excluded from Git. Simulink cache files and generated build folders are also ignored.
 
 ## Scope
 

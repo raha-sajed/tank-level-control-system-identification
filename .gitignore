@@ -30,8 +30,8 @@ Thumbs.db
 *.rar
 *.7z
 
-# Keep required experimental .mat files in data/.
-# Do not ignore *.mat globally unless these files become too large.
+# Experimental data are retained locally and excluded from publication.
+/data/
 
 # Original lab reports and raw project archive (local only)
 /original/
